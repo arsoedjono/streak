@@ -39,8 +39,7 @@ class HomeViewModel @Inject constructor(
                 if (streakName.isBlank()) return
 
                 viewModelScope.launch {
-                    streak?.let { Streak(name = streakName, count = streakCount) }
-                        ?.let { repository.upsertStreak(it) }
+                    repository.upsertStreak(streak ?: Streak(name = streakName, count = streakCount))
                 }
             }
             is HomeEvent.SetStreakCount -> streakCount = event.streakCount.toInt()
