@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Streak(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "count") val count: Int
 )

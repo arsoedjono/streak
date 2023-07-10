@@ -13,20 +13,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    streakTitle: String = "",
-    streakCount: Int = 0
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier
@@ -34,27 +30,24 @@ fun HomeScreen(
             .padding(vertical = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var streakTitleState by remember { mutableStateOf(streakTitle) }
-        var streakCountState by remember { mutableStateOf(streakCount.toString()) }
-
         Text(
             text = "What's Your Streak?",
             style = MaterialTheme.typography.headlineLarge
         )
         Spacer(modifier = Modifier.padding(8.dp))
         OutlinedTextField(
-            value = streakTitleState,
-            onValueChange = { streakTitleState = it },
+            value = viewModel.streakName,
+            onValueChange = { viewModel.onEvent(HomeEvent.SetStreakName(it)) },
             label = { Text("Your Streak") }
         )
         OutlinedTextField(
-            value = if (streakCount == 0) "" else streakCountState,
-            onValueChange = { streakCountState = it },
+            value = viewModel.streakCount.toString(),
+            onValueChange = { viewModel.onEvent(HomeEvent.SetStreakCount(it)) },
             label = { Text("Initial Streak Count (default: 0)") }
         )
         Spacer(modifier = Modifier.padding(8.dp))
         Button(
-            onClick = { /*TODO save to db*/ }
+            onClick = { viewModel.onEvent(HomeEvent.OnSaveStreak) }
         ) {
             Text("Save")
         }
@@ -66,7 +59,7 @@ fun HomeScreen(
             style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = streakCount.toString(),
+            text = viewModel.streakCount.toString(),
             style = MaterialTheme.typography.headlineLarge
         )
     }
