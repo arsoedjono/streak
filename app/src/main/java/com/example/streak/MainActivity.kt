@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.streak.ui.screen.home.HomeScreen
+import com.example.streak.ui.screen.streak.StreakScreen
 import com.example.streak.ui.theme.StreakTheme
 import com.example.streak.util.Routes
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,13 +18,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             StreakTheme {
                 val navController = rememberNavController()
-                
+
+                // TODO: change Routes.Home.name to Routes.Streak.name
                 NavHost(
                     navController = navController,
                     startDestination = Routes.Home.name
                 ) {
                     composable(Routes.Home.name) {
-                        HomeScreen()
+                        StreakScreen()
                     }
                 }
             }
