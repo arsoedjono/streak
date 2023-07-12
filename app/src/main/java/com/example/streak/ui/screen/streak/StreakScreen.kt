@@ -1,6 +1,7 @@
 package com.example.streak.ui.screen.streak
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -34,42 +35,108 @@ fun StreakScreen() {
         .fillMaxSize()
         .background(color = Color.LightGray)
     ) {
+        // if condition based on streak existence
+    }
+}
+
+@Composable
+fun StreakCardEmpty() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(30.dp)
+            .background(color = Color.White, shape = RoundedCornerShape(20.dp))
+            .clip(shape = RoundedCornerShape(20.dp)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "No active streak yet...",
+            modifier = Modifier.padding(48.dp),
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            textAlign = TextAlign.Center
+        )
+        FilledIconButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.size(80.dp),
+            shape = CircleShape,
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = BlueBright)
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add button",
+                tint = Color.White,
+                modifier = Modifier.size(45.dp)
+            )
+        }
+    }
+}
+
+// TODO: change texts to real data
+@Composable
+fun StreakCardNotEmpty() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(30.dp)
+            .background(color = Color.White, shape = RoundedCornerShape(20.dp))
+            .clip(shape = RoundedCornerShape(20.dp)),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .padding(30.dp)
-                .background(color = Color.White, shape = RoundedCornerShape(20.dp))
-                .clip(shape = RoundedCornerShape(20.dp)),
+            modifier = Modifier.padding(48.dp),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "No active streak yet...",
-                modifier = Modifier.padding(48.dp),
+                text = "The active streak name here",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.SemiBold
                 ),
                 textAlign = TextAlign.Center
             )
-            FilledIconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.size(80.dp),
-                shape = CircleShape,
-                colors = IconButtonDefaults.filledIconButtonColors(containerColor = BlueBright)
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Add button",
-                    tint = Color.White,
-                    modifier = Modifier.size(45.dp)
+            Text(
+                text = "13",
+                modifier = Modifier.padding(top = 40.dp),
+                style = MaterialTheme.typography.displayLarge. copy(
+                    fontWeight = FontWeight.SemiBold
                 )
-            }
+            )
+            Text(
+                text = "days",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
+
+        // only if pending
+        Text(
+            text = "Next period: DD-MM-YYYY",
+            modifier = Modifier
+                .weight(1f, false)
+                .padding(bottom = 15.dp),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun StreakScreenPreview() {
     StreakScreen()
+}
+
+@Preview
+@Composable
+fun StreakCardEmptyPreview() {
+    StreakCardEmpty()
+}
+
+@Preview
+@Composable
+fun StreakCardNotEmptyPreview() {
+    StreakCardNotEmpty()
 }
