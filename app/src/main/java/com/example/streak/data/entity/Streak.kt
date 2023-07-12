@@ -8,5 +8,7 @@ import androidx.room.PrimaryKey
 data class Streak(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "count") val count: Int
+    @ColumnInfo(name = "count") val count: Int,
+    @ColumnInfo(name = "repeat_unit") val repeatUnit: String,
+    @ColumnInfo(name = "next_period") val nextPeriod: String
 )

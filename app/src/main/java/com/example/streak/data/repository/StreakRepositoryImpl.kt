@@ -9,7 +9,15 @@ class StreakRepositoryImpl(private val dao: AppDao): StreakRepository {
         return dao.getCurrentStreak()
     }
 
-    override suspend fun upsertStreak(streak: Streak) {
-        dao.upsertStreak(streak)
+    override suspend fun insertStreak(streak: Streak) {
+        dao.insertStreak(streak)
+    }
+
+    override suspend fun updateStreak(streak: Streak) {
+        dao.updateStreak(streak)
+    }
+
+    override suspend fun deleteStreak(streak: Streak) {
+        dao.deleteStreak(streak)
     }
 }
