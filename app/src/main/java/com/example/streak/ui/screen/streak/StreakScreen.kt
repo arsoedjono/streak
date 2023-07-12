@@ -2,17 +2,22 @@ package com.example.streak.ui.screen.streak
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -28,14 +33,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.streak.ui.theme.BlueBright
+import com.example.streak.ui.theme.GreenMalachite
+import com.example.streak.ui.theme.OrangePeel
+import com.example.streak.ui.theme.RedCoral
+import com.example.streak.ui.theme.StreakTheme
 
 @Composable
 fun StreakScreen() {
-    Box(modifier = Modifier
+    Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color.LightGray)
     ) {
         // if condition based on streak existence
+        StreakCardNotEmpty()
     }
 }
 
@@ -81,7 +91,7 @@ fun StreakCardNotEmpty() {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .padding(30.dp)
+            .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 0.dp)
             .background(color = Color.White, shape = RoundedCornerShape(20.dp))
             .clip(shape = RoundedCornerShape(20.dp)),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -99,9 +109,9 @@ fun StreakCardNotEmpty() {
                 ),
                 textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.size(40.dp))
             Text(
                 text = "13",
-                modifier = Modifier.padding(top = 40.dp),
                 style = MaterialTheme.typography.displayLarge. copy(
                     fontWeight = FontWeight.SemiBold
                 )
@@ -121,22 +131,110 @@ fun StreakCardNotEmpty() {
             style = MaterialTheme.typography.bodySmall
         )
     }
+    Spacer(modifier = Modifier.size(24.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp, vertical = 0.dp)
+    ) {
+        FilledIconButton(
+            onClick = { /*TODO*/ },
+            enabled = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(
+                topStart = 15.dp,
+                topEnd = 15.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 0.dp
+            ),
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = GreenMalachite)
+        ) {
+            Icon(
+                Icons.Default.Done,
+                contentDescription = "Done button",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp)
+                .height(40.dp)
+        ) {
+            FilledIconButton(
+                onClick = { /*TODO*/ },
+                enabled = true,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(0.dp),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 15.dp,
+                    bottomEnd = 0.dp
+                ),
+                colors = IconButtonDefaults.filledIconButtonColors(containerColor = OrangePeel)
+            ) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "Edit button",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            FilledIconButton(
+                onClick = { /*TODO*/ },
+                enabled = true,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(0.dp),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 15.dp
+                ),
+                colors = IconButtonDefaults.filledIconButtonColors(containerColor = RedCoral)
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Delete button",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
 }
 
 @Preview
 @Composable
 fun StreakScreenPreview() {
-    StreakScreen()
+    StreakTheme() {
+        StreakScreen()
+    }
 }
 
 @Preview
 @Composable
 fun StreakCardEmptyPreview() {
-    StreakCardEmpty()
+    StreakTheme() {
+        StreakCardEmpty()
+    }
 }
 
 @Preview
 @Composable
 fun StreakCardNotEmptyPreview() {
-    StreakCardNotEmpty()
+    StreakTheme() {
+        Column() {
+            StreakCardNotEmpty()
+        }
+    }
 }
