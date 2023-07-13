@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,12 +19,24 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,20 +50,49 @@ import com.example.streak.ui.theme.GreenMalachite
 import com.example.streak.ui.theme.OrangePeel
 import com.example.streak.ui.theme.RedCoral
 import com.example.streak.ui.theme.StreakTheme
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StreakScreen() {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.LightGray)
-    ) {
-        // if condition based on streak existence
-        StreakCardNotEmpty()
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    Scaffold {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.LightGray)
+            .padding(it)
+        ) {
+            // TODO: if condition based on streak existence
+            StreakCardNotEmpty(
+                onEditClicked = { showBottomSheet = true }
+            )
+        }
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState
+            ) {
+                StreakForm(onSaveClicked = {
+                    // TODO: create new or update existing streak
+                    scope.launch {
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) showBottomSheet = false
+                    }
+                })
+            }
+        }
     }
 }
 
 @Composable
-fun StreakCardEmpty() {
+fun StreakCardEmpty(
+    onAddClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,7 +111,7 @@ fun StreakCardEmpty() {
             textAlign = TextAlign.Center
         )
         FilledIconButton(
-            onClick = { /*TODO*/ },
+            onClick = onAddClicked,
             modifier = Modifier.size(80.dp),
             shape = CircleShape,
             colors = IconButtonDefaults.filledIconButtonColors(containerColor = BlueBright)
@@ -86,7 +128,9 @@ fun StreakCardEmpty() {
 
 // TODO: change texts to real data
 @Composable
-fun StreakCardNotEmpty() {
+fun StreakCardNotEmpty(
+    onEditClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,7 +166,7 @@ fun StreakCardNotEmpty() {
             )
         }
 
-        // only if pending
+        // TODO: only if already done for this period and waiting for the next period
         Text(
             text = "Next period: DD-MM-YYYY",
             modifier = Modifier
@@ -138,8 +182,8 @@ fun StreakCardNotEmpty() {
             .padding(horizontal = 30.dp, vertical = 0.dp)
     ) {
         FilledIconButton(
-            onClick = { /*TODO*/ },
-            enabled = true,
+            onClick = { /* TODO: update to increment streak count by 1 */ },
+            enabled = true, // TODO: disabled if next period is after current time
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp)
@@ -166,7 +210,7 @@ fun StreakCardNotEmpty() {
                 .height(40.dp)
         ) {
             FilledIconButton(
-                onClick = { /*TODO*/ },
+                onClick = onEditClicked,
                 enabled = true,
                 modifier = Modifier
                     .fillMaxSize()
@@ -188,7 +232,7 @@ fun StreakCardNotEmpty() {
                 )
             }
             FilledIconButton(
-                onClick = { /*TODO*/ },
+                onClick = { /* TODO: delete streak */ },
                 enabled = true,
                 modifier = Modifier
                     .fillMaxSize()
@@ -213,6 +257,49 @@ fun StreakCardNotEmpty() {
     }
 }
 
+@Composable
+fun StreakForm(
+    onSaveClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 45.dp, vertical = 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Your Streak",
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Spacer(modifier = Modifier.size(24.dp))
+        // TODO: value based on data and create onValueChange event state
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            label = { Text(text = "Title") }
+        )
+        Spacer(modifier = Modifier.size(15.dp))
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            label = { Text(text = "Streak Count") }
+        )
+        Spacer(modifier = Modifier.size(24.dp))
+        FilledTonalButton(
+            onClick = onSaveClicked,
+            modifier = Modifier
+                .width(200.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = BlueBright,
+                contentColor = Color.White
+            )
+        ) {
+            Text(text = "Save")
+        }
+    }
+}
+
 @Preview
 @Composable
 fun StreakScreenPreview() {
@@ -225,7 +312,7 @@ fun StreakScreenPreview() {
 @Composable
 fun StreakCardEmptyPreview() {
     StreakTheme() {
-        StreakCardEmpty()
+        StreakCardEmpty(onAddClicked = {})
     }
 }
 
@@ -234,7 +321,15 @@ fun StreakCardEmptyPreview() {
 fun StreakCardNotEmptyPreview() {
     StreakTheme() {
         Column() {
-            StreakCardNotEmpty()
+            StreakCardNotEmpty(onEditClicked = {})
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StreakFormPreview() {
+    StreakTheme {
+        StreakForm(onSaveClicked = {})
     }
 }
