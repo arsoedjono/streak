@@ -29,6 +29,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -56,10 +60,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun StreakScreen() {
     val sheetState = rememberModalBottomSheetState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    Scaffold {
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) {
         Column(modifier = Modifier
             .fillMaxSize()
             .background(color = Color.LightGray)
@@ -67,7 +74,28 @@ fun StreakScreen() {
         ) {
             // TODO: if condition based on streak existence
             StreakCardNotEmpty(
-                onEditClicked = { showBottomSheet = true }
+                onEditClicked = {
+                    showBottomSheet = true
+                },
+                onDeleteClicked = {
+                    // TODO: delete streak
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = "Streak successfully deleted!",
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Indefinite
+                        )
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> {
+                                // TODO: Undo deletion
+                                snackbarHostState.showSnackbar(
+                                    message = "Undo delete successfully"
+                                )
+                            }
+                            SnackbarResult.Dismissed -> {}
+                        }
+                    }
+                }
             )
         }
 
@@ -129,7 +157,8 @@ fun StreakCardEmpty(
 // TODO: change texts to real data
 @Composable
 fun StreakCardNotEmpty(
-    onEditClicked: () -> Unit
+    onEditClicked: () -> Unit,
+    onDeleteClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -232,7 +261,7 @@ fun StreakCardNotEmpty(
                 )
             }
             FilledIconButton(
-                onClick = { /* TODO: delete streak */ },
+                onClick = onDeleteClicked,
                 enabled = true,
                 modifier = Modifier
                     .fillMaxSize()
@@ -303,7 +332,7 @@ fun StreakForm(
 @Preview
 @Composable
 fun StreakScreenPreview() {
-    StreakTheme() {
+    StreakTheme {
         StreakScreen()
     }
 }
@@ -311,7 +340,7 @@ fun StreakScreenPreview() {
 @Preview
 @Composable
 fun StreakCardEmptyPreview() {
-    StreakTheme() {
+    StreakTheme {
         StreakCardEmpty(onAddClicked = {})
     }
 }
@@ -319,9 +348,9 @@ fun StreakCardEmptyPreview() {
 @Preview
 @Composable
 fun StreakCardNotEmptyPreview() {
-    StreakTheme() {
-        Column() {
-            StreakCardNotEmpty(onEditClicked = {})
+    StreakTheme {
+        Column {
+            StreakCardNotEmpty(onEditClicked = {}, onDeleteClicked = {})
         }
     }
 }
