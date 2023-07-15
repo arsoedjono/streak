@@ -29,13 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,20 +49,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.streak.ui.theme.BlueBright
 import com.example.streak.ui.theme.GreenMalachite
 import com.example.streak.ui.theme.OrangePeel
 import com.example.streak.ui.theme.RedCoral
 import com.example.streak.ui.theme.StreakTheme
+import com.example.streak.util.UiEvent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StreakScreen() {
+fun StreakScreen(
+    viewModel: StreakViewModel = hiltViewModel()
+) {
     val sheetState = rememberModalBottomSheetState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collect {
+            when(it) {
+                is UiEvent.ShowSnackbar -> {
+                    val result = snackbarHostState.showSnackbar(
+                        message = it.message,
+                        actionLabel = it.action
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.onEvent(StreakEvent.OnUndoDeleteStreak)
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -72,31 +92,22 @@ fun StreakScreen() {
             .background(color = Color.LightGray)
             .padding(it)
         ) {
-            // TODO: if condition based on streak existence
-            StreakCardNotEmpty(
-                onEditClicked = {
-                    showBottomSheet = true
-                },
-                onDeleteClicked = {
-                    // TODO: delete streak
-                    scope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = "Streak successfully deleted!",
-                            actionLabel = "Undo",
-                            duration = SnackbarDuration.Indefinite
-                        )
-                        when (result) {
-                            SnackbarResult.ActionPerformed -> {
-                                // TODO: Undo deletion
-                                snackbarHostState.showSnackbar(
-                                    message = "Undo delete successfully"
-                                )
-                            }
-                            SnackbarResult.Dismissed -> {}
-                        }
+            if (viewModel.streak != null) {
+                StreakCardNotEmpty(
+                    onEditClicked = {
+                        showBottomSheet = true
+                    },
+                    onDeleteClicked = {
+                        viewModel.onEvent(StreakEvent.OnDeleteStreak(viewModel.streak!!))
                     }
-                }
-            )
+                )
+            } else {
+                StreakCardEmpty(
+                    onAddClicked = {
+                        showBottomSheet = true
+                    }
+                )
+            }
         }
 
         if (showBottomSheet) {
@@ -105,7 +116,8 @@ fun StreakScreen() {
                 sheetState = sheetState
             ) {
                 StreakForm(onSaveClicked = {
-                    // TODO: create new or update existing streak
+                    viewModel.onEvent(StreakEvent.OnSaveStreak)
+
                     scope.launch {
                         sheetState.hide()
                     }.invokeOnCompletion {
