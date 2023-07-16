@@ -122,15 +122,24 @@ fun StreakScreen(
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState
             ) {
-                StreakForm(onSaveClicked = {
-                    viewModel.onEvent(StreakEvent.OnSaveStreak)
+                StreakForm(
+                    streak = viewModel.streak,
+                    onNameChanged = { name ->
+                        viewModel.onEvent(StreakEvent.SetStreakName(name))
+                    },
+                    onCountChanged = { count ->
+                        viewModel.onEvent(StreakEvent.SetStreakCount(count))
+                    },
+                    onSaveClicked = {
+                        viewModel.onEvent(StreakEvent.OnSaveStreak)
 
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        if (!sheetState.isVisible) showBottomSheet = false
+                        scope.launch {
+                            sheetState.hide()
+                        }.invokeOnCompletion {
+                            if (!sheetState.isVisible) showBottomSheet = false
+                        }
                     }
-                })
+                )
             }
         }
     }
@@ -311,6 +320,9 @@ fun StreakCardNotEmpty(
 
 @Composable
 fun StreakForm(
+    streak: Streak?,
+    onNameChanged: (String) -> Unit,
+    onCountChanged: (String) -> Unit,
     onSaveClicked: () -> Unit
 ) {
     Column(
@@ -324,16 +336,15 @@ fun StreakForm(
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.size(24.dp))
-        // TODO: value based on data and create onValueChange event state
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            label = { Text(text = "Title") }
+            value = streak?.name ?: "",
+            onValueChange = onNameChanged,
+            label = { Text(text = "Name") }
         )
         Spacer(modifier = Modifier.size(15.dp))
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = streak?.count?.toString() ?: "",
+            onValueChange = onCountChanged,
             label = { Text(text = "Streak Count") }
         )
         Spacer(modifier = Modifier.size(24.dp))
@@ -405,8 +416,33 @@ fun StreakCardNotEmptyPreviewPendingPeriod() {
 
 @Preview(showBackground = true)
 @Composable
-fun StreakFormPreview() {
+fun StreakFormPreviewEmpty() {
     StreakTheme {
-        StreakForm(onSaveClicked = {})
+        StreakForm(
+            streak = null,
+            onNameChanged = {},
+            onCountChanged = {},
+            onSaveClicked = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StreakFormPreviewExist() {
+    StreakTheme {
+        StreakForm(
+            streak = Streak(
+                name = "My Streak",
+                count = 139,
+                nextPeriod = LocalDate
+                    .now()
+                    .plusDays(1)
+                    .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+            ),
+            onNameChanged = {},
+            onCountChanged = {},
+            onSaveClicked = {}
+        )
     }
 }

@@ -7,4 +7,6 @@ sealed class StreakEvent {
     object OnIncrementStreakCount: StreakEvent()
     data class OnDeleteStreak(val streak: Streak): StreakEvent()
     object OnUndoDeleteStreak: StreakEvent()
+    data class SetStreakName(val streakName: String): StreakEvent()
+    data class SetStreakCount(val streakCount: String): StreakEvent()
 }

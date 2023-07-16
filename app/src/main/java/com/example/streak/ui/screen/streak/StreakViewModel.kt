@@ -94,6 +94,8 @@ class StreakViewModel @Inject constructor(
                     }
                 }
             }
+            is StreakEvent.SetStreakName -> streakName = event.streakName
+            is StreakEvent.SetStreakCount -> streakCount = event.streakCount.toInt()
         }
     }
 
