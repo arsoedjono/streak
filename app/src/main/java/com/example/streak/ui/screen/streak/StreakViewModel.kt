@@ -64,6 +64,11 @@ class StreakViewModel @Inject constructor(
                     }
                 }
             }
+            is StreakEvent.OnIncrementStreakCount -> {
+                viewModelScope.launch {
+                    repository.updateStreak(streak!!.copy(count = streakCount + 1))
+                }
+            }
             is StreakEvent.OnDeleteStreak -> {
                 viewModelScope.launch {
                     deletedStreak = event.streak

@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.streak.data.entity.Streak
 import com.example.streak.ui.theme.BlueBright
 import com.example.streak.ui.theme.GreenMalachite
 import com.example.streak.ui.theme.OrangePeel
@@ -57,6 +58,8 @@ import com.example.streak.ui.theme.RedCoral
 import com.example.streak.ui.theme.StreakTheme
 import com.example.streak.util.UiEvent
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +97,10 @@ fun StreakScreen(
         ) {
             if (viewModel.streak != null) {
                 StreakCardNotEmpty(
+                    streak = viewModel.streak!!,
+                    onChecklistClicked = {
+                        viewModel.onEvent(StreakEvent.OnIncrementStreakCount)
+                    },
                     onEditClicked = {
                         showBottomSheet = true
                     },
@@ -166,12 +173,15 @@ fun StreakCardEmpty(
     }
 }
 
-// TODO: change texts to real data
 @Composable
 fun StreakCardNotEmpty(
+    streak: Streak,
+    onChecklistClicked: () -> Unit,
     onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit
 ) {
+    val isPendingPeriod = LocalDate.now() < LocalDate.parse(streak.nextPeriod, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +198,7 @@ fun StreakCardNotEmpty(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "The active streak name here",
+                text = streak.name,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.SemiBold
                 ),
@@ -196,7 +206,7 @@ fun StreakCardNotEmpty(
             )
             Spacer(modifier = Modifier.size(40.dp))
             Text(
-                text = "13",
+                text = streak.count.toString(),
                 style = MaterialTheme.typography.displayLarge. copy(
                     fontWeight = FontWeight.SemiBold
                 )
@@ -207,14 +217,15 @@ fun StreakCardNotEmpty(
             )
         }
 
-        // TODO: only if already done for this period and waiting for the next period
-        Text(
-            text = "Next period: DD-MM-YYYY",
-            modifier = Modifier
-                .weight(1f, false)
-                .padding(bottom = 15.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
+        if (isPendingPeriod) {
+            Text(
+                text = "Next period: ${streak.nextPeriod}",
+                modifier = Modifier
+                    .weight(1f, false)
+                    .padding(bottom = 15.dp),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
     Spacer(modifier = Modifier.size(24.dp))
     Column(
@@ -223,8 +234,8 @@ fun StreakCardNotEmpty(
             .padding(horizontal = 30.dp, vertical = 0.dp)
     ) {
         FilledIconButton(
-            onClick = { /* TODO: update to increment streak count by 1 */ },
-            enabled = true, // TODO: disabled if next period is after current time
+            onClick = onChecklistClicked,
+            enabled = !isPendingPeriod,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp)
@@ -343,14 +354,6 @@ fun StreakForm(
 
 @Preview
 @Composable
-fun StreakScreenPreview() {
-    StreakTheme {
-        StreakScreen()
-    }
-}
-
-@Preview
-@Composable
 fun StreakCardEmptyPreview() {
     StreakTheme {
         StreakCardEmpty(onAddClicked = {})
@@ -359,10 +362,43 @@ fun StreakCardEmptyPreview() {
 
 @Preview
 @Composable
-fun StreakCardNotEmptyPreview() {
+fun StreakCardNotEmptyPreviewActivePeriod() {
     StreakTheme {
         Column {
-            StreakCardNotEmpty(onEditClicked = {}, onDeleteClicked = {})
+            StreakCardNotEmpty(
+                streak = Streak(
+                    name = "My Streak",
+                    count = 139,
+                    nextPeriod = LocalDate
+                        .now()
+                        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                ),
+                onChecklistClicked = {},
+                onEditClicked = {},
+                onDeleteClicked = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun StreakCardNotEmptyPreviewPendingPeriod() {
+    StreakTheme {
+        Column {
+            StreakCardNotEmpty(
+                streak = Streak(
+                    name = "My Streak",
+                    count = 139,
+                    nextPeriod = LocalDate
+                        .now()
+                        .plusDays(1)
+                        .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                ),
+                onChecklistClicked = {},
+                onEditClicked = {},
+                onDeleteClicked = {}
+            )
         }
     }
 }
