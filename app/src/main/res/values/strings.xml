@@ -1,3 +1,19 @@
 <resources>
+    <!-- app -->
     <string name="app_name">Streak</string>
+
+    <!-- general -->
+    <string name="buttonContentDescriptionAdd">Add button</string>
+    <string name="buttonContentDescriptionDelete">Delete button</string>
+    <string name="buttonContentDescriptionDone">Done button</string>
+    <string name="buttonContentDescriptionEdit">Edit button</string>
+    <string name="buttonTextSave">Save</string>
+    <string name="formatDate">dd-MM-yyyy</string>
+
+    <!-- streak -->
+    <string name="streakFormLabelCount">Streak Count</string>
+    <string name="streakFormLabelName">Name</string>
+    <string name="streakFormTitle">Your Streak</string>
+    <string name="streakNextPeriod">Next period: %1$s</string>
+    <string name="streakNoActive">No active streak yet…</string>
 </resources>
